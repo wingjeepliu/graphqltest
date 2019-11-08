@@ -4,7 +4,7 @@ import {graphql} from 'react-apollo';//bind apollo to component// compose not fo
 import {flowRight as compose} from 'lodash';
 // import {gql} from 'apollo-boost';//for parsing gql
 
-import {getAuthorsQuery , addBookMutation} from '../../queries/query';
+import {getAuthorsQuery , addBookMutation, getBooksQuery} from '../../queries/query';
 import CustomInputWithHook from '../CustomeInputWithHook/CustomeInputWithHook.component';
 import CustomSelectWithHook from '../CustomeSelectWithHook/CustomeSelectWithHook.component';
 function genOptions(data){
@@ -58,7 +58,14 @@ const AddBook= function(args) {
         const book={name, genre, authorId};
         console.log('form submit', book);
   
-        args.addBookMutation({variables:{name:name, genre: genre, authorId: authorId}});
+        args.addBookMutation({
+            variables:{
+                name:name, 
+                genre: genre, 
+                authorId: authorId
+            },
+            refetchQueries:[{query:getBooksQuery}]
+        });
     }
     return (
         <form id = "add-book" onSubmit={submitFormHandler}>
