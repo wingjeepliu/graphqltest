@@ -1,15 +1,16 @@
 import React , { useState , useEffect} from 'react'
 
-import {graphql} from 'react-apollo';//bind apollo to component
+import {graphql} from 'react-apollo';//bind apollo to component// compose not found in react-apollo
+import {flowRight as compose} from 'lodash';
 // import {gql} from 'apollo-boost';//for parsing gql
 
-import {getAuthorsQuery } from '../../queries/query';
+import {getAuthorsQuery , addBookMutation} from '../../queries/query';
 import CustomInputWithHook from '../CustomeInputWithHook/CustomeInputWithHook.component';
 import CustomSelectWithHook from '../CustomeSelectWithHook/CustomeSelectWithHook.component';
 function genOptions(args){
-   
-    if(!args.data.loading){
-        return args.data.authors.map(author =>{
+ 
+    if(!args.loading){
+        return args.authors.map(author =>{
             return (<option value={author.id} key ={author.id}>{author.name}</option>)
         })
     }else{
@@ -17,6 +18,7 @@ function genOptions(args){
     }
 }
 function genOptionWithBindArgs(args){
+    
     return ()=>genOptions(args);
 }
 // function useInput({ type , id}) {
@@ -37,17 +39,28 @@ const AddBook= function(args) {
     
     const [name, setName] = CustomInputWithHook({type:'text', id:'name'});
     const [genre, setGenre] = CustomInputWithHook({type:'text', id:'genre'});
-  
-    const optionGenFunc = genOptionWithBindArgs(args);
-    const [author, setAuthor] = CustomSelectWithHook({ id:'genre', optFunc:optionGenFunc});
+   
+    // for(var key in args){
+    //     console.log(key, args[key],' =========>');
+    // }
+
+    const optionGenFunc = genOptionWithBindArgs(args.getAuthorsQuery);
+    const [authorId, setAuthor] = CustomSelectWithHook({ id:'genre', optFunc:optionGenFunc});
     useEffect(() => {
         // Update the document title using the browser API
-       console.log('compoment did mount or update', name,genre , author);
+        const book={name, genre, authorId};
+        console.log('compoment did mount or update', book);
+     
     });
     
-    
+    function submitFormHandler(e){
+        e.preventDefault();
+        const book={name, genre, authorId};
+        console.log('form submit', book);
+   
+    }
     return (
-        <form id = "add-book">
+        <form id = "add-book" onSubmit={submitFormHandler}>
             <div className="field">
                 <label>Book name:</label>
                 {setName}
@@ -64,4 +77,16 @@ const AddBook= function(args) {
         </form>
     )
 }
-export default graphql(getAuthorsQuery)(AddBook);
+
+// export default graphql(getAuthorsQuery)(AddBook);
+
+//how bind more than 1 query
+// export default compose(
+//     graphql(getAuthorsQuery, {name:"getAuthorsQuery"}),   
+//     graphql(addBookMutation, {name:"addBookMutation"}) 
+// )(AddBook);
+
+export default compose(
+    graphql(getAuthorsQuery, { name: "getAuthorsQuery" }),
+    graphql(addBookMutation, { name: "addBookMutation" })
+  )(AddBook);
