@@ -57,7 +57,8 @@ const AddBook= function(args) {
         e.preventDefault();
         const book={name, genre, authorId};
         console.log('form submit', book);
-   
+  
+        args.addBookMutation({variables:{name:name, genre: genre, authorId: authorId}});
     }
     return (
         <form id = "add-book" onSubmit={submitFormHandler}>
