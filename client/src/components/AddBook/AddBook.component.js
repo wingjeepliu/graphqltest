@@ -7,19 +7,19 @@ import {flowRight as compose} from 'lodash';
 import {getAuthorsQuery , addBookMutation} from '../../queries/query';
 import CustomInputWithHook from '../CustomeInputWithHook/CustomeInputWithHook.component';
 import CustomSelectWithHook from '../CustomeSelectWithHook/CustomeSelectWithHook.component';
-function genOptions(args){
- 
-    if(!args.loading){
-        return args.authors.map(author =>{
+function genOptions(data){
+    console.log('gql author handler');
+    if(!data.loading){
+        return data.authors.map(author =>{
             return (<option value={author.id} key ={author.id}>{author.name}</option>)
         })
     }else{
         return(<option>Loading Authors..</option>)
     }
 }
-function genOptionWithBindArgs(args){
+function genOptionWithBindArgs(data){
     
-    return ()=>genOptions(args);
+    return ()=>genOptions(data);
 }
 // function useInput({ type , id}) {
 //     const [value, setValue] = useState("");
@@ -36,7 +36,7 @@ function genOptionWithBindArgs(args){
 // }
 
 const AddBook= function(args) {
-    
+    console.log('args', args);
     const [name, setName] = CustomInputWithHook({type:'text', id:'name'});
     const [genre, setGenre] = CustomInputWithHook({type:'text', id:'genre'});
    
